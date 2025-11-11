@@ -1,0 +1,14 @@
+Best CV score: 0.6436755497467023
+              precision    recall  f1-score   support
+
+           0       0.87      0.69      0.77      6023
+           1       0.45      0.71      0.55      2105
+
+    accuracy                           0.70      8128
+   macro avg       0.66      0.70      0.66      8128
+weighted avg       0.76      0.70      0.71      8128
+
+[[4169 1854]
+ [ 617 1488]]
+Best threshold: 0.45455701876533305
+Best F1 score: 0.5509783728115345
