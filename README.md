@@ -1,7 +1,7 @@
 # **Repository Workflow**
 
 ## Clone the repository:
-git clone https://github.com/ShekharApurv/Sarcasm_Detection.git
+git clone https://github.com/ShekharApurv/Sarcasm_Detection.git <br>
 cd Sarcasm_Detection
 
 ## Create and activate virtual environment:
@@ -14,3 +14,4 @@ pip install -r requirements.txt
 
 ## Run the webapp:
 streamlit run app2.py
+
