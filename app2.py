@@ -63,8 +63,9 @@ if st.button("Detect"):
                 proba = svm_model.predict_proba([cleaned])[0]
             else:
                 scores = svm_model.decision_function([cleaned])
-                scores = (scores - scores.min()) / (scores.max() - scores.min())
-                proba = [1 - scores[0], scores[0]]
+                # scores = (scores - scores.min()) / (scores.max() - scores.min())
+                proba = 1 / (1 + np.exp(-scores[0]))
+                proba = [1 - proba, proba]
             proba = safe_proba(proba)
             model_name = "SVM"
 

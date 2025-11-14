@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, confusion_matrix, precision_recall_curve
+from sklearn.metrics import classification_report, confusion_matrix, precision_recall_curve, roc_curve, roc_auc_score
 import matplotlib.pyplot as plt
 import joblib
 import emoji
@@ -25,9 +25,9 @@ test_df["label"] = test_df["class"].apply(lambda x: 1 if x == "sarcasm" else 0)
 # print(df)
 
 def clean_text(text):
-    text = re.sub(r"http\S+", "", text)   # remove URLs
-    text = re.sub(r"@\w+", "", text)      # remove mentions
-    text = re.sub(r"#\w+", "", text)      # remove hashtags
+    text = re.sub(r"http\S+", "", text)           # remove URLs
+    text = re.sub(r"@\w+", "", text)          # remove mentions
+    text = re.sub(r"#\w+", "", text)          # remove hashtags
     text = contractions.fix(text)         # expand contractions
     text = emoji.replace_emoji(text, replace="") # remove emoji
     text = re.sub(r"[^\w\s]", "", text)    # remove punctuation
@@ -57,8 +57,15 @@ X_test = test_df["clean_text"]
 y_test = test_df["label"]
 
 pipeline = Pipeline([
-    ('tfidf', TfidfVectorizer(sublinear_tf=True, ngram_range=(1,2))),
-    ('clf', LinearSVC(C=0.75, class_weight="balanced", max_iter=5000))
+    ('tfidf', TfidfVectorizer(
+        sublinear_tf=True, 
+        ngram_range=(1,2)
+    )),
+    ('clf', LinearSVC(
+        C=0.75, 
+        class_weight="balanced", 
+        max_iter=5000
+    ))
 ])
 
 param_grid = {
@@ -81,7 +88,8 @@ print("Best CV score:", grid.best_score_)
 
 best_model = grid.best_estimator_
 y_pred = best_model.predict(X_test)
-# probs = best_model.predict_proba(X_test)[:, 1]
+scores = best_model.decision_function(X_test)
+# scores
 
 # precision, recall, thresholds = precision_recall_curve(y_test, probs)
 # custom_threshold = 0.487
@@ -94,6 +102,19 @@ y_pred = best_model.predict(X_test)
 # plt.title('Precision-Recall Curve for Sarcasm Detection')
 # plt.legend()
 # plt.savefig("precision_recall_curve.png", dpi=300, bbox_inches='tight')
+# plt.show()
+
+# fpr, tpr, thresholds = roc_curve(y_test, score)
+# roc_auc = roc_auc_score(y_test, score)
+
+# plt.figure(figsize=(8,6))
+# plt.plot(fpr, tpr, color='blue', label=f'ROC curve (AUC = {roc_auc:.3f})')
+# plt.plot([0,1], [0,1], color='gray', linestyle='--', label='Random baseline')
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate (Recall)')
+# plt.title('ROC Curve for Sarcasm Detection')
+# plt.legend(loc='lower right')
+# plt.savefig("svm_roc_curve.png", dpi=300, bbox_inches='tight')
 # plt.show()
 
 print(classification_report(y_test, y_pred))

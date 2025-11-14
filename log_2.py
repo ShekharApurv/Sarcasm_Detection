@@ -25,9 +25,9 @@ test_df["label"] = test_df["class"].apply(lambda x: 1 if x == "sarcasm" else 0)
 # print(df)
 
 def clean_text(text):
-    text = re.sub(r"http\S+", "", text)   # remove URLs
-    text = re.sub(r"@\w+", "", text)      # remove mentions
-    text = re.sub(r"#\w+", "", text)      # remove hashtags
+    text = re.sub(r"http\S+", "", text)           # remove URLs
+    text = re.sub(r"@\w+", "", text)          # remove mentions
+    text = re.sub(r"#\w+", "", text)          # remove hashtags
     text = contractions.fix(text)         # expand contractions
     text = emoji.replace_emoji(text, replace="") # remove emoji
     text = re.sub(r"[^\w\s]", "", text)    # remove punctuation
@@ -54,7 +54,7 @@ y_test = test_df["label"]
 
 vectorizer = FeatureUnion([
     ('word_tfidf', TfidfVectorizer(
-        sublinear_tf=True,
+        sublinear_tf=True,   # 1 + log(tf)
         ngram_range=(1,2),   # word unigrams + bigrams
         max_features=10000
     )),
@@ -87,6 +87,21 @@ y_pred = best_model.predict(X_test)
 probs = best_model.predict_proba(X_test)[:, 1]
 
 precision, recall, thresholds = precision_recall_curve(y_test, probs)
+
+# fpr, tpr, thresholds = roc_curve(y_test, probs)
+# roc_auc = roc_auc_score(y_test, probs)
+
+# plt.figure(figsize=(8,6))
+# plt.plot(fpr, tpr, color='blue', label=f'ROC curve (AUC = {roc_auc:.3f})')
+# plt.plot([0,1], [0,1], color='gray', linestyle='--', label='Random baseline')
+
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate (Recall)')
+# plt.title('ROC Curve for Sarcasm Detection')
+# plt.legend(loc='lower right')
+# plt.savefig("log_reg_roc_curve.png", dpi=300, bbox_inches='tight')
+# plt.show()
+
 # custom_threshold = 0.47
 # y_pred_custom = (probs >= custom_threshold).astype(int)
 
